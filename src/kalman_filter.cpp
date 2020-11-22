@@ -12,6 +12,30 @@ KalmanFilter::KalmanFilter() {}
 
 KalmanFilter::~KalmanFilter() {}
 
+void KalmanFilter::Initialize(MatrixXd &H_laser_in,MatrixXd &R_laser_in){
+
+// x and P are set 
+
+  H_=H_laser_in;
+  R_laser_= R_laser_in;
+
+  //Initial transition matrix F_
+  F_ = MatrixXd(4,4);
+  F_ << 1., 0., 1., 0.,
+        0., 1., 0., 1.,
+        0., 0., 1., 0., 
+        0., 0., 0., 1.;
+
+ //These are just initialization values. They shuld be updated
+  Q_ = MatrixXd(4,4);
+  Q_ <<   1., 0., 1., 0.,
+          0., 1., 0., 1.,
+          1., 0., 1., 0., 
+          0., 1., 0., 1.;
+
+
+}
+
 void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
                         MatrixXd &H_in, MatrixXd &R_in, MatrixXd &Q_in) {
   x_ = x_in;
@@ -46,22 +70,38 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
 
 void KalmanFilter::Predict() {
    // predict the state
-   
-  //self.x= self.F*self.x   + self.u 
-   x_ =F_*x_;   // not u (external force)??
-  //self.P = self.F * self.P * np.transpose(self.F)
+  x_ =F_*x_;   // not u (external force)??
   P_=F_*P_*F_.transpose()+ Q_;
-
-  // KF Prediction step
-   // x=F*x+u;
-  //  P=F*P*F.transpose()+ Q;
-
 }
 
 void KalmanFilter::Update(const VectorXd &z) {
   /**
    * TODO: update the state by using Kalman Filter equations
    */
+
+//We have the observations z
+// We also here use the H_laser that in our case is just H_
+  //We have a conversion of the position based on our x
+  VectorXd y;
+  MatrixXd S;
+  MatrixXd K;
+
+  y=z-H_*x_;  // the error
+  //other= H_* x_;
+  S=H_*P_*H_.transpose()+R_laser_;
+  K=P_*H_.transpose()*S.inverse();
+
+  //Now the new estimate updates
+
+  x_=x_+K*y;
+  long x_size = x_.size();
+  MatrixXd I = MatrixXd::Identity(x_size, x_size);
+  P_=(I -K*H_)*P_;
+
+
+
+
+
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
@@ -76,7 +116,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
    F_(1,3) = elapsed_time;
 
  }
- void KalmanFilter::UpdateProcessNoiseQ(long long dt,float ax, float ay){
+ void KalmanFilter::UpdateProcessNoiseQ(float dt,float ax, float ay){
    // Modify Q
   
    long long dt4_4 = (dt*dt*dt*dt)/4;
