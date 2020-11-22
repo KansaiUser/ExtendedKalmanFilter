@@ -64,13 +64,23 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       // TODO: Convert radar from polar to cartesian coordinates 
       //         and initialize state.
+      //
 
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       // TODO: Initialize state.
+      // 
+      ekf_.x_(0)= measurement_pack.raw_measurements_(0);
+      ekf_.x_(1)= measurement_pack.raw_measurements_(1);
+      //how about velocity
+      //ekf_.x_(2)=  xx;
+      //ekf_.x_(3)=  xx;
 
     }
 
+     //record the time stamp 
+
+     previous_timestamp_=  measurement_pack.timestamp_; 
     // done initializing, no need to predict or update
     is_initialized_ = true;
     return;
@@ -83,11 +93,17 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   /**
    * TODO: Update the state transition matrix F according to the new elapsed time.
    * Time is measured in seconds.
-   * TODO: Update the process noise covariance matrix.
+   */
+   long long elapsed_time= measurement_pack.timestamp_-previous_timestamp_;
+   cout<< "Elapsed time: "<< elapsed_time<<endl;
+   ekf_.UpdateTransitionF(elapsed_time);
+
+   /* TODO: Update the process noise covariance matrix.
    * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
    */
+   ekf_.UpdateProcessNoiseQ(elapsed_time,9,9);
 
-  ekf_.Predict();
+   ekf_.Predict();
 
   /**
    * Update
@@ -101,12 +117,22 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // TODO: Radar updates
+    // Extended Kalman Filter
+    // void UpdateEKF(const Eigen::VectorXd &z);
+
+    ekf_.UpdateEKF(z);
 
   } else {
     // TODO: Laser updates
+    // void Update(const Eigen::VectorXd &z);
+
+    ekf_.Update(z);
+
 
   }
-
+   
+  //update the previous timestamp
+   previous_timestamp_= measurement_pack.timestamp_;
   // print the output
   cout << "x_ = " << ekf_.x_ << endl;
   cout << "P_ = " << ekf_.P_ << endl;

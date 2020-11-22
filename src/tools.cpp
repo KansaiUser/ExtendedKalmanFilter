@@ -12,7 +12,7 @@ Tools::~Tools() {}
 VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
                               const vector<VectorXd> &ground_truth) {
    int n= estimations.size();
-   float sum=0.0;
+   //float sum=0.0;
 
    VectorXd rmse(4);
    rmse<<0,0,0,0;

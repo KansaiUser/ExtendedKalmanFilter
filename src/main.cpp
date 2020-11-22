@@ -67,6 +67,8 @@ int main() {
           string sensor_type;
           iss >> sensor_type;
 
+
+          // Filling data to the Measurement Package meas_package
           if (sensor_type.compare("L") == 0) {
             meas_package.sensor_type_ = MeasurementPackage::LASER;
             meas_package.raw_measurements_ = VectorXd(2);
@@ -91,6 +93,7 @@ int main() {
             meas_package.timestamp_ = timestamp;
           }
 
+          // Filling data to the Ground Truth Measurements
           float x_gt;
           float y_gt;
           float vx_gt;
@@ -111,7 +114,9 @@ int main() {
           fusionEKF.ProcessMeasurement(meas_package);       
 
           // Push the current estimated x,y positon from the Kalman filter's 
-          //   state vector
+          // state vector
+
+          // So the estimated x,y position is calculated in ProcessMeasurement and fed here for calculating accuracy and visualization
 
           VectorXd estimate(4);
 

@@ -46,6 +46,18 @@ class KalmanFilter {
    */
   void UpdateEKF(const Eigen::VectorXd &z);
 
+
+   // Auxiliary functions
+
+  /**
+   * Update the Transition Matrix F
+   */ 
+  void UpdateTransitionF(long long elapsed_time);
+  /**
+   * Update the process noise covariance matrix.
+  */
+  void UpdateProcessNoiseQ(long long dt,float ax, float ay);
+
   // state vector
   Eigen::VectorXd x_;
 
