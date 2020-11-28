@@ -12,11 +12,13 @@ Tools::~Tools() {}
 VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
                               const vector<VectorXd> &ground_truth) {
    int n= estimations.size();
-   //float sum=0.0;
-
+   //std::cout<<"Size "<<n<<std::endl;
+   //std::cout<< "Est: "<<estimations[n-1]<<std::endl;
+   //std::cout<<"GT: "<<ground_truth[n-1]<<std::endl;
+   
    VectorXd rmse(4);
    rmse<<0,0,0,0;
-
+   //std::cout<<"BEFORE: "<<rmse<<std::endl;
    //First some checks
    if(estimations.size()==0)
     {    std::cout<<"Error, estimation size is 0"<<std::endl;
@@ -24,7 +26,7 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
     }
    if(estimations.size()!=ground_truth.size())
   {
-      std::cout<<"Error, estimation and grund truth size is different"<<std::endl;
+      std::cout<<"Error, estimation and ground truth size is different"<<std::endl;
       return rmse;
   }
 
@@ -32,12 +34,16 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
    {
       VectorXd difference= estimations[i]-ground_truth[i];
       difference=difference.array()*difference.array();   
+      //std::cout<<"Dif: "<<difference<<std::endl;
       rmse+= difference;
    }
 
-   rmse*=(1/n);
+   //std::cout<<"Step1: "<<rmse<<" n "<<n<<std::endl; 
+   //rmse*=(1/n);  //<--- this does not work!!
+   rmse=rmse/n;
+   //std::cout<<"Step2: "<<rmse<<std::endl;
    rmse=rmse.array().sqrt();
-   
+   //std::cout<<"AFTER: "<<rmse<<std::endl;
    return rmse;
 }
 
