@@ -88,7 +88,7 @@ void KalmanFilter::Update(const VectorXd &z) {
   MatrixXd K;
 
   y=z-H_*x_;  // the error
-  //other= H_* x_;
+  
   S=H_*P_*H_.transpose()+R_laser_;
   K=P_*H_.transpose()*S.inverse();
 
@@ -103,7 +103,7 @@ void KalmanFilter::Update(const VectorXd &z) {
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
   /**
-   * TODO: update the state by using Extended Kalman Filter equations
+   *  update the state by using Extended Kalman Filter equations
    */
 
 // z has three components   
@@ -130,8 +130,6 @@ dif(2)=(px*vx+py*vy)/(sqrt(px*px+py*py));  //BE CAREFUL THIS COULD BE 0!!
 
 y=z-dif;
 
-//std::cout<<"uno"<<std::endl;
-
  while ( y(1) > M_PI || y(1) < -M_PI ) {
     if ( y(1) > M_PI ) {
       y(1) -= M_PI;
@@ -139,20 +137,12 @@ y=z-dif;
       y(1) += M_PI;
     }
   }
-//std::cout<<"dos"<<std::endl;
-
- //MatrixXd Ht = H_.transpose();
-//std::cout<<"tres"<<std::endl;
 //Replacement
   S=H_*P_*H_.transpose()+R_radar_;
 
-//S=S+R_laser;
-
-//std::cout<<"cuatro"<<std::endl;
 
   K=P_*H_.transpose()*S.inverse();
 
-//std::cout<<"cinco"<<std::endl;
   //Now the new estimate updates
 
   x_=x_+K*y;
@@ -191,7 +181,7 @@ x_=x_+K*y;
 
  void KalmanFilter::UpdateTransitionF(long long elapsed_time){
    
-   F_(0,2)= elapsed_time;   //TODO verify type
+   F_(0,2)= elapsed_time;   
    F_(1,3) = elapsed_time;
 
  }
