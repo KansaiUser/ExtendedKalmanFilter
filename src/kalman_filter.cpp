@@ -188,9 +188,9 @@ x_=x_+K*y;
  void KalmanFilter::UpdateProcessNoiseQ(float dt,float ax, float ay){
    // Modify Q
   
-   long long dt4_4 = (dt*dt*dt*dt)/4;
-   long long dt3_2=  (dt*dt*dt)/2;
-   long long dt2= dt*dt;
+   double dt4_4 = (dt*dt*dt*dt)/4;
+   double dt3_2=  (dt*dt*dt)/2;
+   double dt2= dt*dt;
     
   Q_(0,0) =dt4_4 * ax;//*ax; 
   Q_(0,2) =dt3_2 * ax;//*ax;
